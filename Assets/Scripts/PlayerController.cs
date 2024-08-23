@@ -11,12 +11,16 @@ public class PlayerController : MonoBehaviour
   private Rigidbody2D rb2D;
   private SpriteRenderer ballRenderer;
   private int currentColorIndex = 0;
-  
+  private SoundManager soundManager;
+
   void Start()
   {
+    soundManager = FindObjectOfType<SoundManager>();
+
     rb2D = GetComponent<Rigidbody2D>();
     ballRenderer = GetComponent<SpriteRenderer>();
     SetRandomColor();
+
   }
 
   void Update()
@@ -45,22 +49,18 @@ public class PlayerController : MonoBehaviour
     }
     if (collision.gameObject.CompareTag("ColorSwitcher"))
     {
-      SwitchColor();
-      Destroy(collision.gameObject);
+      SwitchColor(collision);
     }
     if (collision.gameObject.CompareTag("Point"))
     {
-      GameObject particleInstance = Instantiate(starCollection, collision.transform.position, Quaternion.identity);
-      ParticleSystem ps = particleInstance.GetComponent<ParticleSystem>();
-      ps.Play();
-      GameManager.Instance.collectedPoint++;
-      Destroy(collision.gameObject);
+      CollectPoint(collision);
     }
   }
 
   void Jump()
   {
     rb2D.velocity = Vector2.up * jumpForce;
+    soundManager.jumpSound.Play();
   }
   void TriggerGameOver()
   {
@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
       GameObject particleInstance = Instantiate(playerDeath, transform.position, Quaternion.identity);
       ParticleSystem ps = particleInstance.GetComponent<ParticleSystem>();
       ps.Play();
-
+      soundManager.defeatSound.Play();
       gameObject.SetActive(false);  
       GameManager.Instance.GameOver();
     }
@@ -85,11 +85,24 @@ public class PlayerController : MonoBehaviour
     }
   }
 
-  void SwitchColor()
+  void SwitchColor(Collider2D collision)
   {
     int colorCount = GameManager.Instance.colors.Count;
     currentColorIndex = (currentColorIndex + 1) % colorCount;
     ballRenderer.color = GameManager.Instance.GetColor(currentColorIndex);
+    soundManager.switchSound.Play();
+    Destroy(collision.gameObject);
+
+  }
+  void CollectPoint(Collider2D collision)
+  {
+    GameObject particleInstance = Instantiate(starCollection, collision.transform.position, Quaternion.identity);
+    ParticleSystem ps = particleInstance.GetComponent<ParticleSystem>();
+    ps.Play();
+    GameManager.Instance.collectedPoint++;
+    soundManager.collectSound.Play();
+    Destroy(collision.gameObject);
+
   }
 
 }
