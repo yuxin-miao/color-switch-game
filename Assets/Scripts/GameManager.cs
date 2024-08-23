@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,7 +7,11 @@ public class GameManager : MonoBehaviour
   public static GameManager Instance;  
 
   public GameObject gameOverScreen;    
-  public bool isGameOver = false;  
+  public bool isGameOver = false;
+
+  public List<Color> colors = new List<Color>();
+  public int collectedPoint = 0;
+
 
   void Awake()
   {
@@ -27,6 +32,15 @@ public class GameManager : MonoBehaviour
     {
       RestartGame();
     }
+  }
+
+  public Color GetColor(int index)
+  {
+    if (index >= 0 && index < colors.Count)
+    {
+      return colors[index];
+    }
+    return Color.white;
   }
 
   public void GameOver()

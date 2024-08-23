@@ -8,7 +8,6 @@ TagManager:
   - Arc
   - Point
   - ColorSwitcherTre
-  - GameOverScreen
   layers:
   - Default
   - TransparentFX

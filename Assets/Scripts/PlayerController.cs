@@ -3,13 +3,20 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
-  public float jumpForce = 5f; 
-  private Rigidbody2D rb2D;
-  public ParticleSystem playerDeath;
 
+  public float jumpForce = 5f; 
+  public GameObject playerDeath;
+  public GameObject starCollection;
+
+  private Rigidbody2D rb2D;
+  private SpriteRenderer ballRenderer;
+  private int currentColorIndex = 0;
+  
   void Start()
   {
     rb2D = GetComponent<Rigidbody2D>();
+    ballRenderer = GetComponent<SpriteRenderer>();
+    SetRandomColor();
   }
 
   void Update()
@@ -30,6 +37,26 @@ public class PlayerController : MonoBehaviour
       }
     }
   }
+  private void OnTriggerEnter2D(Collider2D collision)
+  {
+    if (collision.gameObject.CompareTag("Arc") && ballRenderer.color != collision.gameObject.GetComponent<SpriteRenderer>().color)
+    {
+      TriggerGameOver();
+    }
+    if (collision.gameObject.CompareTag("ColorSwitcher"))
+    {
+      SwitchColor();
+      Destroy(collision.gameObject);
+    }
+    if (collision.gameObject.CompareTag("Point"))
+    {
+      GameObject particleInstance = Instantiate(starCollection, collision.transform.position, Quaternion.identity);
+      ParticleSystem ps = particleInstance.GetComponent<ParticleSystem>();
+      ps.Play();
+      GameManager.Instance.collectedPoint++;
+      Destroy(collision.gameObject);
+    }
+  }
 
   void Jump()
   {
@@ -39,10 +66,30 @@ public class PlayerController : MonoBehaviour
   {
     if (transform)
     {
-      playerDeath.transform.position = transform.position;
-      playerDeath.Play();
+      GameObject particleInstance = Instantiate(playerDeath, transform.position, Quaternion.identity);
+      ParticleSystem ps = particleInstance.GetComponent<ParticleSystem>();
+      ps.Play();
+
       gameObject.SetActive(false);  
       GameManager.Instance.GameOver();
     }
   }
+
+  void SetRandomColor()
+  {
+    if (GameManager.Instance.colors.Count > 0)
+    {
+      int colorIndex = Random.Range(0, GameManager.Instance.colors.Count);
+      currentColorIndex = colorIndex;
+      ballRenderer.color = GameManager.Instance.GetColor(colorIndex);
+    }
+  }
+
+  void SwitchColor()
+  {
+    int colorCount = GameManager.Instance.colors.Count;
+    currentColorIndex = (currentColorIndex + 1) % colorCount;
+    ballRenderer.color = GameManager.Instance.GetColor(currentColorIndex);
+  }
+
 }
