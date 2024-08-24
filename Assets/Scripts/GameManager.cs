@@ -6,12 +6,12 @@ public class GameManager : MonoBehaviour
 {
   public static GameManager Instance;  
 
-  public GameObject gameOverScreen;    
+  public GameObject gameOverScreen;
+  public GameObject gameFinishScreen;
   public bool isGameOver = false;
 
   public List<Color> colors = new List<Color>();
   public int collectedPoint = 0;
-
 
   void Awake()
   {
@@ -36,9 +36,9 @@ public class GameManager : MonoBehaviour
 
   public Color GetColor(int index)
   {
-    if (index >= 0 && index < colors.Count)
+    if (index >= 0)
     {
-      return colors[index];
+      return colors[index % (colors.Count)];
     }
     return Color.white;
   }
@@ -51,7 +51,14 @@ public class GameManager : MonoBehaviour
       gameOverScreen.SetActive(true);  
     }
   }
-
+  public void GameFinish()
+  {
+    isGameOver = true;
+    if (gameFinishScreen != null)
+    {
+      gameFinishScreen.SetActive(true);
+    }
+  }
   public void RestartGame()
   {
     isGameOver = false;  

@@ -55,6 +55,10 @@ public class PlayerController : MonoBehaviour
     {
       CollectPoint(collision);
     }
+    if (collision.gameObject.CompareTag("Finish"))
+    {
+      TriggerGameFinish();
+    }
   }
 
   void Jump()
@@ -72,6 +76,18 @@ public class PlayerController : MonoBehaviour
       soundManager.defeatSound.Play();
       gameObject.SetActive(false);  
       GameManager.Instance.GameOver();
+    }
+  }
+  void TriggerGameFinish()
+  {
+    if (transform)
+    {
+      GameObject particleInstance = Instantiate(starCollection, transform.position, Quaternion.identity);
+      ParticleSystem ps = particleInstance.GetComponent<ParticleSystem>();
+      ps.Play();
+      soundManager.collectSound.Play();
+      gameObject.SetActive(false);
+      GameManager.Instance.GameFinish();
     }
   }
 
