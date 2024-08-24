@@ -12,7 +12,13 @@ public class GameManager : MonoBehaviour
 
   public List<Color> colors = new List<Color>();
   public int collectedPoint = 0;
+  public float timer; 
 
+  public bool isEndless = false;
+  public bool isHard = false;
+  public bool testMode = false;
+
+  public int activeObstaclesCount = 12;
   void Awake()
   {
     if (Instance == null)
@@ -28,6 +34,7 @@ public class GameManager : MonoBehaviour
 
   void Update()
   {
+    timer += Time.deltaTime;
     if (isGameOver && Input.GetMouseButtonDown(0))
     {
       RestartGame();

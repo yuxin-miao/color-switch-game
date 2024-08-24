@@ -9,14 +9,15 @@ public class ObstacleController: MonoBehaviour
   public float rotationSpeed = 90.0f;
   public float moveSpeed = 3.0f;
 
-  private float moveDistance = 4;
+  private float moveDistance = 2.0f;
   private Vector3 startPosition;
   private SpriteRenderer[] childRenderers;
   private int startIndex = 0;
+  private PlayerController player;
   private void Start()
   {
     childRenderers = GetComponentsInChildren<SpriteRenderer>();
-
+    player = FindObjectOfType<PlayerController>();
     AssignColor();
     startPosition = transform.position;
   }
@@ -29,7 +30,7 @@ public class ObstacleController: MonoBehaviour
     }
     if (move)
     {
-      float movement = Mathf.PingPong(Time.time * moveSpeed, moveDistance);
+      float movement = Mathf.PingPong(Time.time * moveSpeed, 2 * moveDistance) - moveDistance;
       transform.position = startPosition + Vector3.right * movement;
     }
 
@@ -39,7 +40,12 @@ public class ObstacleController: MonoBehaviour
       AssignColor();
     }
 
-
+    // destroy the obstacle if is out of the screen
+    if (player != null && transform.position.y < (player.transform.position.y - 6.0f))
+    {
+      GameManager.Instance.activeObstaclesCount--;
+      Destroy(gameObject);
+    }
   }
   private void AssignColor()
   {

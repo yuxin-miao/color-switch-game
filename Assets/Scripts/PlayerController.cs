@@ -68,6 +68,7 @@ public class PlayerController : MonoBehaviour
   }
   void TriggerGameOver()
   {
+    if (GameManager.Instance.testMode) return;
     if (transform)
     {
       GameObject particleInstance = Instantiate(playerDeath, transform.position, Quaternion.identity);
@@ -107,6 +108,7 @@ public class PlayerController : MonoBehaviour
     currentColorIndex = (currentColorIndex + 1) % colorCount;
     ballRenderer.color = GameManager.Instance.GetColor(currentColorIndex);
     soundManager.switchSound.Play();
+    GameManager.Instance.activeObstaclesCount--;
     Destroy(collision.gameObject);
 
   }
@@ -116,6 +118,7 @@ public class PlayerController : MonoBehaviour
     ParticleSystem ps = particleInstance.GetComponent<ParticleSystem>();
     ps.Play();
     GameManager.Instance.collectedPoint++;
+    GameManager.Instance.activeObstaclesCount--;
     soundManager.collectSound.Play();
     Destroy(collision.gameObject);
 
