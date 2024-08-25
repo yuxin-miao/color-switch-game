@@ -4,16 +4,18 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-  public static GameManager Instance;  
+  public static GameManager Instance; // For easy access
 
   public GameObject gameOverScreen;
   public GameObject gameFinishScreen;
   public bool isGameOver = false;
 
-  public List<Color> colors = new List<Color>();
+  // All other comoponents will get color from gameManager. Easy to change color for the whole game 
+  // TODO: Allow user to pick up colors and change  
+  public List<Color> colors = new List<Color>(); // Predetermined colors 
   public int collectedPoint = 0;
-  public float timer; 
 
+  // Add differnt mode for various gaming experience 
   public bool isEndless = false;
   public bool isHard = false;
   public bool testMode = false;
@@ -21,6 +23,7 @@ public class GameManager : MonoBehaviour
   public int activeObstaclesCount = 12;
   void Awake()
   {
+    // Only one gameManager instance exist 
     if (Instance == null)
     {
       Instance = this;
@@ -34,7 +37,7 @@ public class GameManager : MonoBehaviour
 
   void Update()
   {
-    timer += Time.deltaTime;
+    // Handle restart when user tap anywhere 
     if (isGameOver && Input.GetMouseButtonDown(0))
     {
       RestartGame();

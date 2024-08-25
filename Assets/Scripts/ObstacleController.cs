@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class ObstacleController: MonoBehaviour
 {
+  // Control the obstacle move, rotate, and color change 
   public bool rotate = true;
   public bool changeColor = false;
   public bool move = false;
@@ -34,13 +35,14 @@ public class ObstacleController: MonoBehaviour
       transform.position = startPosition + Vector3.right * movement;
     }
 
+    // When user click anywhere, the obstacle will change color following the order
     if (Input.GetMouseButtonDown(0) && changeColor)
     {
       startIndex++;
       AssignColor();
     }
 
-    // destroy the obstacle if is out of the screen
+    // Destroy the obstacle if it is out of the screen
     if (player != null && transform.position.y < (player.transform.position.y - 6.0f))
     {
       GameManager.Instance.activeObstaclesCount--;
@@ -49,6 +51,7 @@ public class ObstacleController: MonoBehaviour
   }
   private void AssignColor()
   {
+    // The color is assigned after game start, so the obstacles color will always match the color determined in GameManager 
     if (childRenderers.Length == 1)
     {
       childRenderers[0].color = GameManager.Instance.GetColor(Random.Range(0, GameManager.Instance.colors.Count));

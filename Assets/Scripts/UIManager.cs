@@ -5,10 +5,17 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
   public TMP_Text scoreText;
+  public TMP_Text timeSpent;
   public GameObject finishText;
   public Toggle hardToggle;
   public ObstacleSpawner obstacleSpawner;
   private int lastScore = 0;
+  private float startTime;
+  void Start()
+  {
+    startTime = Time.time;
+  }
+
 
   void Update()
   {
@@ -17,11 +24,20 @@ public class UIManager : MonoBehaviour
       lastScore = GameManager.Instance.collectedPoint;
       scoreText.text = lastScore.ToString();
     }
+
+    if (!GameManager.Instance.isGameOver)
+    {
+      float timeElapsed = Time.time - startTime;
+      timeSpent.text = timeElapsed.ToString("F1");
+    }
+
+
     if (GameManager.Instance.isEndless)
     {
       finishText.SetActive(false);
       hardToggle.interactable = true;
-    } else
+    } 
+    else
     {
       if (!finishText.activeSelf)
       {

@@ -3,14 +3,15 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
+  // Handle player move and interact with items 
 
-  public float jumpForce = 5f; 
-  public GameObject playerDeath;
-  public GameObject starCollection;
+  public float jumpForce = 5f;
+  public GameObject playerDeath; // Particle system reference 
+  public GameObject starCollection;// Particle system reference 
 
-  private Rigidbody2D rb2D;
+  private Rigidbody2D rb2D; 
   private SpriteRenderer ballRenderer;
-  private int currentColorIndex = 0;
+  private int currentColorIndex = 0; // Store current color index for color switching during runtime 
   private SoundManager soundManager;
 
   void Start()
@@ -19,46 +20,58 @@ public class PlayerController : MonoBehaviour
 
     rb2D = GetComponent<Rigidbody2D>();
     ballRenderer = GetComponent<SpriteRenderer>();
-    SetRandomColor();
+    SetRandomColor(); // Randomly selected one color from the predetermined four colors, and set as ball color 
 
   }
 
   void Update()
   {
-
+    // Only update when game is running 
     if (!GameManager.Instance.isGameOver)
     {
+      // If player fall out of the screen, game over
       float cameraBottomY = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, 0)).y;
-
       if (transform.position.y < cameraBottomY)
       {
         TriggerGameOver();
       }
 
+      // Handle player input, jump when press anywhere 
       if (Input.GetMouseButtonDown(0))
       {
         Jump();
       }
     }
   }
+
+  // Handle player interact with different items 
   private void OnTriggerEnter2D(Collider2D collision)
   {
+    // Interact with an obstacle with different color, game over 
     if (collision.gameObject.CompareTag("Arc") && ballRenderer.color != collision.gameObject.GetComponent<SpriteRenderer>().color)
     {
       TriggerGameOver();
     }
+
+    // Interact with color switcher to change the color of the ball 
     if (collision.gameObject.CompareTag("ColorSwitcher"))
     {
       SwitchColor(collision);
     }
+
+    // Interact with the Star to collect point 
     if (collision.gameObject.CompareTag("Point"))
     {
       CollectPoint(collision);
     }
+
+    // Interact with the Finish line 
     if (collision.gameObject.CompareTag("Finish"))
     {
       TriggerGameFinish();
     }
+
+    // TODO: change to Switch, instead of mutiple IF statements. Better for adding more types of interactable items 
   }
 
   void Jump()
@@ -68,14 +81,17 @@ public class PlayerController : MonoBehaviour
   }
   void TriggerGameOver()
   {
-    if (GameManager.Instance.testMode) return;
+    if (GameManager.Instance.testMode) return; // Player won't die under teseMode 
     if (transform)
     {
+      // Spawn a particle system to indicate the ball being destroyed 
       GameObject particleInstance = Instantiate(playerDeath, transform.position, Quaternion.identity);
       ParticleSystem ps = particleInstance.GetComponent<ParticleSystem>();
       ps.Play();
       soundManager.defeatSound.Play();
       gameObject.SetActive(false);  
+
+      // Let GameManager handle game state 
       GameManager.Instance.GameOver();
     }
   }
